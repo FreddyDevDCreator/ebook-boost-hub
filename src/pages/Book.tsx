@@ -10,7 +10,7 @@ const Book = () => {
           {/* Book Cover */}
           <div className="w-full md:w-1/3">
             <img 
-              src="/placeholder.svg" 
+              src="/lovable-uploads/8158b5c0-c97a-4d57-8890-83d666f63563.png" 
               alt="Node.js Performance Optimization Book Cover"
               className="w-full rounded-lg shadow-xl"
             />

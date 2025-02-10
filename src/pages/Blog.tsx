@@ -13,7 +13,24 @@ const Blog = () => {
         .order('published_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      
+      // Map specific images to specific posts
+      return data?.map(post => {
+        let imageUrl = post.featured_image;
+        
+        if (post.title === "Understanding the Node.js Event Loop") {
+          imageUrl = "/lovable-uploads/5725d615-d33b-4de6-b8fc-3f8b95cef625.png";
+        } else if (post.title === "10 Performance Optimization Tips") {
+          imageUrl = "/lovable-uploads/20073a08-4de4-4097-8c6b-1a41938e37de.png";
+        } else if (post.title === "Advanced Memory Management in Node.js") {
+          imageUrl = "/lovable-uploads/f866da4b-6812-467a-8d43-2721f4f344dd.png";
+        }
+        
+        return {
+          ...post,
+          featured_image: imageUrl
+        };
+      });
     },
   });
 
