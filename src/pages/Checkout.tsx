@@ -1,16 +1,40 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { FlutterWaveButton, closePaymentModal } from 'flutterwave-react-v3';
 import { FLUTTERWAVE_CONFIG } from "@/config/payment";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+
+type Course = {
+  id: string;
+  title: string;
+  price: number;
+  currency: string;
+};
 
 const Checkout = () => {
+  const { courseSlug } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const { data: course } = useQuery({
+    queryKey: ['course', courseSlug],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('id, title, price, currency')
+        .eq('slug', courseSlug)
+        .single();
+      
+      if (error) throw error;
+      return data as Course;
+    },
+  });
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,7 +47,7 @@ const Checkout = () => {
     if (showSuccessModal) {
       const timer = setTimeout(() => {
         setShowSuccessModal(false);
-        navigate("/");
+        navigate("/courses");
       }, 5000);
       return () => clearTimeout(timer);
     }
@@ -41,11 +65,11 @@ const Checkout = () => {
     return `cust_${Date.now()}${Math.random().toString(36).substring(2, 7)}`;
   };
 
-  const config = {
+  const config = course ? {
     public_key: FLUTTERWAVE_CONFIG.publicKey,
     tx_ref: `tx_${Date.now()}`,
-    amount: FLUTTERWAVE_CONFIG.amount,
-    currency: FLUTTERWAVE_CONFIG.currency,
+    amount: course.price,
+    currency: course.currency,
     payment_options: FLUTTERWAVE_CONFIG.payment_options,
     customer: {
       id: generateCustomerId(),
@@ -54,20 +78,41 @@ const Checkout = () => {
       phone_number: formData.phoneNumber,
     },
     customizations: {
-      title: 'Node.js Performance Optimization Book',
-      description: 'Payment for ebook',
+      title: course.title,
+      description: `Payment for ${course.title}`,
       logo: 'https://res.cloudinary.com/del59phog/image/upload/v1737451299/wlrpccbwrj4aebtc6xvy.jpg',
     },
     meta: {
       source: 'web',
       consumer_id: generateCustomerId(),
+      course_id: course.id,
     },
-  };
+  } : null;
 
   const handleFlutterPayment = async (response: any) => {
     console.log("Flutterwave response:", response);
 
     if (response.status === "completed" || response.status === "successful") {
+      // Save order to database
+      const { error } = await supabase
+        .from('orders')
+        .insert({
+          customer_name: formData.customerName,
+          customer_email: formData.customerEmail,
+          amount: course?.price,
+          status: 'completed'
+        });
+
+      if (error) {
+        console.error('Error saving order:', error);
+        toast({
+          title: "Error",
+          description: "There was a problem saving your order. Please contact support.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setShowSuccessModal(true);
       setFormData({ customerName: "", customerEmail: "", phoneNumber: "" });
     } else {
@@ -79,6 +124,17 @@ const Checkout = () => {
     }
     closePaymentModal();
   };
+
+  if (!course) {
+    return (
+      <div className="min-h-screen bg-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-2xl font-bold mb-4">Course not found</h1>
+          <Button onClick={() => navigate('/courses')}>Back to Courses</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -93,8 +149,10 @@ const Checkout = () => {
               <div className="mb-6">
                 <h2 className="text-xl font-semibold mb-2">Order Summary</h2>
                 <div className="flex justify-between items-center">
-                  <span>Node.js Performance Optimization Book</span>
-                  <span className="font-semibold">₦25,000</span>
+                  <span>{course.title}</span>
+                  <span className="font-semibold">
+                    {course.currency} {course.price.toLocaleString()}
+                  </span>
                 </div>
               </div>
 
@@ -144,13 +202,13 @@ const Checkout = () => {
                   />
                 </div>
 
-                {formData.customerName && formData.customerEmail && formData.phoneNumber ? (
+                {formData.customerName && formData.customerEmail && formData.phoneNumber && config ? (
                   <FlutterWaveButton
                     {...config}
                     className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded"
                     callback={handleFlutterPayment}
                     onClose={() => closePaymentModal()}
-                    text="Complete Purchase - ₦25,000"
+                    text={`Complete Purchase - ${course.currency} ${course.price.toLocaleString()}`}
                   />
                 ) : (
                   <Button 
@@ -182,10 +240,10 @@ const Checkout = () => {
           </DialogHeader>
           <div className="text-center space-y-4 mt-4">
             <p id="payment-success-description" className="text-lg font-medium text-gray-800">Thank you for your purchase!</p>
-            <p className="text-md text-gray-600">Your ebook has been sent to your email address.</p>
+            <p className="text-md text-gray-600">Course access details have been sent to your email address.</p>
             <div className="mt-6 p-4 bg-green-50 rounded-md">
               <p className="text-sm text-green-600">
-                Redirecting to homepage in a few seconds...
+                Redirecting to courses page in a few seconds...
               </p>
             </div>
           </div>

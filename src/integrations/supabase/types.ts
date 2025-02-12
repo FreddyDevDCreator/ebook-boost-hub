@@ -72,6 +72,51 @@ export type Database = {
         }
         Relationships: []
       }
+      courses: {
+        Row: {
+          created_at: string
+          currency: string
+          description: string
+          duration: string
+          id: string
+          instructor: string
+          level: string
+          preview_content: string
+          preview_images: string[]
+          price: number
+          slug: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          description: string
+          duration: string
+          id?: string
+          instructor: string
+          level: string
+          preview_content: string
+          preview_images?: string[]
+          price: number
+          slug: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          description?: string
+          duration?: string
+          id?: string
+          instructor?: string
+          level?: string
+          preview_content?: string
+          preview_images?: string[]
+          price?: number
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount: number

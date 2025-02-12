@@ -12,8 +12,9 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import Courses from "./pages/Courses";
+import CoursePreview from "./pages/CoursePreview";
 
-// Create a new QueryClient instance outside the component
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
@@ -30,7 +31,9 @@ const App: React.FC = () => {
               <Route path="/blog" element={<Blog />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/checkout/:courseSlug" element={<Checkout />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/courses/:slug" element={<CoursePreview />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
