@@ -16,17 +16,15 @@ const Checkout = () => {
   const [formData, setFormData] = useState({
     customerName: "",
     customerEmail: "",
-    phoneNumber: "", // Added phone number field
+    phoneNumber: "",
   });
 
-  // Add effect for timed redirect
   useEffect(() => {
     if (showSuccessModal) {
       const timer = setTimeout(() => {
         setShowSuccessModal(false);
         navigate("/");
-      }, 5000); // 5 seconds delay
-
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [showSuccessModal, navigate]);
@@ -39,13 +37,18 @@ const Checkout = () => {
     }));
   };
 
+  const generateCustomerId = () => {
+    return `cust_${Date.now()}${Math.random().toString(36).substring(2, 7)}`;
+  };
+
   const config = {
-    public_key: FLUTTERWAVE_CONFIG.publicKey,
-    tx_ref: Date.now().toString(),
+    ...FLUTTERWAVE_CONFIG,
+    tx_ref: `tx_${Date.now()}`,
     amount: FLUTTERWAVE_CONFIG.amount,
     currency: FLUTTERWAVE_CONFIG.currency,
     payment_options: FLUTTERWAVE_CONFIG.payment_options,
     customer: {
+      id: generateCustomerId(),
       email: formData.customerEmail,
       name: formData.customerName,
       phone_number: formData.phoneNumber,
@@ -54,6 +57,10 @@ const Checkout = () => {
       title: 'Node.js Performance Optimization Book',
       description: 'Payment for ebook',
       logo: 'https://res.cloudinary.com/del59phog/image/upload/v1737451299/wlrpccbwrj4aebtc6xvy.jpg',
+    },
+    meta: {
+      source: 'web',
+      consumer_id: generateCustomerId(),
     },
   };
 
@@ -137,13 +144,22 @@ const Checkout = () => {
                   />
                 </div>
 
-                <FlutterWaveButton
-                  {...config}
-                  className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-2 px-4 rounded"
-                  callback={handleFlutterPayment}
-                  onClose={() => closePaymentModal()}
-                  text="Complete Purchase - ₦25,000"
-                />
+                {formData.customerName && formData.customerEmail && formData.phoneNumber ? (
+                  <FlutterWaveButton
+                    {...config}
+                    className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded"
+                    callback={handleFlutterPayment}
+                    onClose={() => closePaymentModal()}
+                    text="Complete Purchase - ₦25,000"
+                  />
+                ) : (
+                  <Button 
+                    disabled 
+                    className="w-full"
+                  >
+                    Please fill all fields
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -155,14 +171,17 @@ const Checkout = () => {
       </div>
 
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="sm:max-w-md bg-white p-6 rounded-lg shadow-xl border-2 border-green-500">
+        <DialogContent 
+          className="sm:max-w-md bg-white p-6 rounded-lg shadow-xl border-2 border-green-500"
+          aria-describedby="payment-success-description"
+        >
           <DialogHeader>
             <DialogTitle className="text-center text-2xl font-bold text-green-600">
               Payment Successful! 🎉
             </DialogTitle>
           </DialogHeader>
           <div className="text-center space-y-4 mt-4">
-            <p className="text-lg font-medium text-gray-800">Thank you for your purchase!</p>
+            <p id="payment-success-description" className="text-lg font-medium text-gray-800">Thank you for your purchase!</p>
             <p className="text-md text-gray-600">Your ebook has been sent to your email address.</p>
             <div className="mt-6 p-4 bg-green-50 rounded-md">
               <p className="text-sm text-green-600">
