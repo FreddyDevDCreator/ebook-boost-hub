@@ -42,7 +42,7 @@ const Checkout = () => {
   };
 
   const config = {
-    ...FLUTTERWAVE_CONFIG,
+    public_key: FLUTTERWAVE_CONFIG.publicKey,
     tx_ref: `tx_${Date.now()}`,
     amount: FLUTTERWAVE_CONFIG.amount,
     currency: FLUTTERWAVE_CONFIG.currency,
