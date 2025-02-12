@@ -26,15 +26,19 @@ const CoursePreview = () => {
   const { data: course, isLoading } = useQuery({
     queryKey: ['course', slug],
     queryFn: async () => {
+      if (!slug) throw new Error('Course slug is required');
+      
       const { data, error } = await supabase
         .from('courses')
-        .select('*')
+        .select()
         .eq('slug', slug)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
+      if (!data) throw new Error('Course not found');
       return data as Course;
     },
+    enabled: !!slug,
   });
 
   if (isLoading) {
