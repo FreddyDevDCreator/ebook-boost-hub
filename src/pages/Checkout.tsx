@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ const Checkout = () => {
   const [formData, setFormData] = useState({
     customerName: "",
     customerEmail: "",
-    phoneNumber: "", // Added phone number
+    phoneNumber: "", // Added phone number field
   });
 
   // Add effect for timed redirect
