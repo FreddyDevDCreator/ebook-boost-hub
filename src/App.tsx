@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import Courses from "./pages/Courses";
 import CoursePreview from "./pages/CoursePreview";
 import AdminCourses from "./pages/AdminCourses";
+import AdminCourseForm from "./pages/AdminCourseForm";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,8 @@ const App: React.FC = () => {
               <Route path="/courses" element={<Courses />} />
               <Route path="/courses/:slug" element={<CoursePreview />} />
               <Route path="/admin/courses" element={<AdminCourses />} />
+              <Route path="/admin/courses/new" element={<AdminCourseForm />} />
+              <Route path="/admin/courses/edit/:id" element={<AdminCourseForm />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
