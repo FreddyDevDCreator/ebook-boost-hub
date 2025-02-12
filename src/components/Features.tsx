@@ -3,33 +3,33 @@ import { Zap, Code, Bot, Search, Shield, Cpu } from "lucide-react";
 
 const features = [
   {
-    name: "Performance Fundamentals",
-    description: "Learn the core concepts of Node.js performance optimization and best practices.",
-    icon: Zap,
-  },
-  {
-    name: "Code Analysis",
-    description: "Master techniques for identifying and resolving performance bottlenecks.",
+    name: "Expert Instructors",
+    description: "Learn from industry professionals with years of real-world experience.",
     icon: Code,
   },
   {
-    name: "Memory Management",
-    description: "Understand memory leaks, garbage collection, and optimization strategies.",
+    name: "Practical Projects",
+    description: "Build real-world applications and expand your portfolio.",
+    icon: Zap,
+  },
+  {
+    name: "Self-Paced Learning",
+    description: "Study at your own pace with lifetime access to course materials.",
     icon: Cpu,
   },
   {
-    name: "Security Optimization",
-    description: "Implement secure coding practices without sacrificing performance.",
+    name: "Industry-Standard Content",
+    description: "Stay up-to-date with the latest technologies and best practices.",
     icon: Shield,
   },
   {
-    name: "Monitoring & Debugging",
-    description: "Set up comprehensive monitoring and debugging systems.",
+    name: "Interactive Learning",
+    description: "Engage with hands-on exercises and real-time feedback.",
     icon: Search,
   },
   {
-    name: "Automated Testing",
-    description: "Create automated performance tests and continuous monitoring.",
+    name: "Community Support",
+    description: "Join our community of learners and get help when you need it.",
     icon: Bot,
   },
 ];
@@ -39,12 +39,12 @@ const Features = () => {
     <div className="relative bg-white py-16 sm:py-24 lg:py-32">
       <div className="container-custom">
         <div className="text-center">
-          <h2 className="text-base font-semibold text-primary uppercase tracking-wide">Features</h2>
+          <h2 className="text-base font-semibold text-primary uppercase tracking-wide">Why Choose FredAbod TechEd</h2>
           <p className="mt-2 text-3xl font-extrabold text-gray-900 sm:text-4xl">
-            Everything you need to optimize your Node.js applications
+            Everything you need to advance your tech career
           </p>
           <p className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
-            Comprehensive guide covering all aspects of Node.js performance optimization
+            We provide comprehensive tech education with a focus on practical skills and industry relevance
           </p>
         </div>
 
