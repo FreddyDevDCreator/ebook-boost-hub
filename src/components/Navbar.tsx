@@ -13,18 +13,18 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <BookOpen className="h-8 w-8 text-primary" />
-              <span className="font-semibold text-xl">NodePerf</span>
+              <span className="font-semibold text-xl">FredAbod TechEd</span>
             </Link>
           </div>
 
           {/* Desktop menu */}
           <div className="hidden md:flex md:items-center md:space-x-8">
-            <Link to="/book" className="text-gray-700 hover:text-gray-900 transition-colors">Book</Link>
+            <Link to="/courses" className="text-gray-700 hover:text-gray-900 transition-colors">Courses</Link>
             <Link to="/blog" className="text-gray-700 hover:text-gray-900 transition-colors">Blog</Link>
             <Link to="/about" className="text-gray-700 hover:text-gray-900 transition-colors">About</Link>
             <Link to="/contact" className="text-gray-700 hover:text-gray-900 transition-colors">Contact</Link>
-            <Link to="/checkout" className="btn-primary">
-              Buy Now
+            <Link to="/courses" className="btn-primary">
+              Browse Courses
             </Link>
           </div>
 
@@ -44,10 +44,10 @@ const Navbar = () => {
       <div className={`${isOpen ? "block" : "hidden"} md:hidden`}>
         <div className="pt-2 pb-3 space-y-1">
           <Link
-            to="/book"
+            to="/courses"
             className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
           >
-            Book
+            Courses
           </Link>
           <Link
             to="/blog"
@@ -66,12 +66,6 @@ const Navbar = () => {
             className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
           >
             Contact
-          </Link>
-          <Link
-            to="/checkout"
-            className="block px-3 py-2 text-base font-medium text-primary hover:text-primary-hover"
-          >
-            Buy Now
           </Link>
         </div>
       </div>
