@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -317,7 +316,10 @@ const Book = () => {
               </CardContent>
               <CardFooter>
                 <Button
-                  onClick={() => handleTierSelect('basic')}
+                  onClick={() => {
+                    handleTierSelect('basic');
+                    navigate(`/checkout?product=ebook&tier=basic`);
+                  }}
                   className={`w-full ${selectedTier === 'basic' ? 'bg-blue-700' : ''}`}
                 >
                   Select Basic
@@ -357,7 +359,10 @@ const Book = () => {
               </CardContent>
               <CardFooter>
                 <Button
-                  onClick={() => handleTierSelect('pro')}
+                  onClick={() => {
+                    handleTierSelect('pro');
+                    navigate(`/checkout?product=ebook&tier=pro`);
+                  }}
                   className={`w-full ${selectedTier === 'pro' ? 'bg-blue-700' : ''}`}
                 >
                   Select Pro
@@ -400,7 +405,10 @@ const Book = () => {
               </CardContent>
               <CardFooter>
                 <Button
-                  onClick={() => handleTierSelect('premium')}
+                  onClick={() => {
+                    handleTierSelect('premium');
+                    navigate(`/checkout?product=ebook&tier=premium`);
+                  }}
                   className={`w-full ${selectedTier === 'premium' ? 'bg-blue-700' : ''}`}
                 >
                   Select Premium

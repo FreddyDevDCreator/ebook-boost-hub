@@ -24,7 +24,10 @@ const Navbar = () => {
             <Link to="/about" className="text-gray-700 hover:text-gray-900 transition-colors">About</Link>
             <Link to="/contact" className="text-gray-700 hover:text-gray-900 transition-colors">Contact</Link>
             <Link to="/courses" className="btn-primary">
-              Browse Courses
+              Buy Free Courses
+            </Link>
+            <Link to="/book" className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg font-medium">
+              Buy Ebook
             </Link>
           </div>
 
@@ -66,6 +69,12 @@ const Navbar = () => {
             className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
           >
             Contact
+          </Link>
+          <Link
+            to="/book"
+            className="block px-3 py-2 text-base font-medium bg-yellow-500 text-black hover:bg-yellow-600 rounded mt-2"
+          >
+            Buy Ebook
           </Link>
         </div>
       </div>

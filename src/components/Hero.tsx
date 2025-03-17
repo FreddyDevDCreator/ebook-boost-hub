@@ -23,8 +23,16 @@ const Hero = () => {
                     to="/courses"
                     className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary-hover md:py-4 md:text-lg md:px-10"
                   >
-                    Browse Courses
+                    Buy Free Courses
                     <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </div>
+                <div className="mt-3 sm:mt-0 sm:ml-3">
+                  <Link
+                    to="/book"
+                    className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-black bg-yellow-500 hover:bg-yellow-600 md:py-4 md:text-lg md:px-10"
+                  >
+                    Buy Ebook
                   </Link>
                 </div>
                 <div className="mt-3 sm:mt-0 sm:ml-3">
