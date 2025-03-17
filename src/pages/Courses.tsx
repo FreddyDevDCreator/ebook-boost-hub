@@ -1,23 +1,12 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Clock, BookOpen, ArrowRight } from "lucide-react";
+import { Tables } from "@/types/supabase";
 
-type Course = {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  currency: string;
-  preview_images: string[];
-  instructor: string;
-  duration: string;
-  level: string;
-  slug: string;
-};
+type Course = Tables["courses"];
 
 const Courses = () => {
   const { data: courses, isLoading } = useQuery({

@@ -3,6 +3,9 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { Tables } from "@/types/supabase";
+
+type ContactSubmission = Tables["contact_submissions"];
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -17,7 +20,7 @@ const Contact = () => {
     try {
       const { error } = await supabase
         .from('contact_submissions')
-        .insert([formData]);
+        .insert(formData);
       
       if (error) throw error;
       

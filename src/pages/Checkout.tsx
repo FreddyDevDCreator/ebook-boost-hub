@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,13 +8,10 @@ import { FLUTTERWAVE_CONFIG } from "@/config/payment";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Tables } from "@/types/supabase";
 
-type Course = {
-  id: string;
-  title: string;
-  price: number;
-  currency: string;
-};
+type Course = Tables["courses"];
+type Order = Tables["orders"];
 
 const Checkout = () => {
   const { courseSlug } = useParams();
@@ -94,14 +90,16 @@ const Checkout = () => {
 
     if (response.status === "completed" || response.status === "successful") {
       // Save order to database
+      const orderData: Partial<Order> = {
+        customer_name: formData.customerName,
+        customer_email: formData.customerEmail,
+        amount: course?.price,
+        status: 'completed'
+      };
+
       const { error } = await supabase
         .from('orders')
-        .insert({
-          customer_name: formData.customerName,
-          customer_email: formData.customerEmail,
-          amount: course?.price,
-          status: 'completed'
-        });
+        .insert(orderData);
 
       if (error) {
         console.error('Error saving order:', error);

@@ -1,23 +1,11 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Clock, BookOpen, ArrowLeft } from "lucide-react";
+import { Tables } from "@/types/supabase";
 
-type Course = {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  currency: string;
-  preview_images: string[];
-  preview_content: string;
-  instructor: string;
-  duration: string;
-  level: string;
-  slug: string;
-};
+type Course = Tables["courses"];
 
 const CoursePreview = () => {
   const { slug } = useParams();

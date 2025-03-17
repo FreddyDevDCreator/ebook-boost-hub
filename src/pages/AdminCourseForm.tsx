@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Tables } from "@/types/supabase";
 
 type CourseFormData = {
   title: string;
@@ -33,6 +34,7 @@ type CourseFormData = {
   duration: string;
   preview_content: string;
   currency: string;
+  preview_images?: string[];
 };
 
 const AdminCourseForm = () => {
@@ -51,6 +53,7 @@ const AdminCourseForm = () => {
       duration: "8 weeks",
       preview_content: "",
       currency: "USD",
+      preview_images: [],
     },
   });
 
@@ -60,14 +63,14 @@ const AdminCourseForm = () => {
 
       try {
         const { data, error } = await supabase
-          .from("courses")
+          .from('courses')
           .select("*")
           .eq("id", id)
           .single();
 
         if (error) throw error;
         if (data) {
-          form.reset(data);
+          form.reset(data as CourseFormData);
         }
       } catch (error) {
         console.error("Error fetching course:", error);
@@ -86,7 +89,7 @@ const AdminCourseForm = () => {
       if (id) {
         // Update existing course
         const { error } = await supabase
-          .from("courses")
+          .from('courses')
           .update(data)
           .eq("id", id);
 
@@ -95,7 +98,7 @@ const AdminCourseForm = () => {
       } else {
         // Create new course
         const { error } = await supabase
-          .from("courses")
+          .from('courses')
           .insert(data);
 
         if (error) throw error;

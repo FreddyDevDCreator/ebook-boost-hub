@@ -9,7 +9,189 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      blog_posts: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          published_at: string
+          slug: string
+          title: string
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string
+          slug: string
+          title: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      contact_submissions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          subject?: string
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          created_at: string
+          currency: string
+          description: string
+          duration: string
+          id: string
+          instructor: string
+          level: string
+          preview_content: string
+          preview_images: string[]
+          price: number
+          slug: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          description: string
+          duration: string
+          id?: string
+          instructor: string
+          level: string
+          preview_content: string
+          preview_images?: string[]
+          price: number
+          slug: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          description?: string
+          duration?: string
+          id?: string
+          instructor?: string
+          level?: string
+          preview_content?: string
+          preview_images?: string[]
+          price?: number
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_email: string
+          customer_name: string
+          id: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          id?: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          id?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_admin: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          is_admin?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_admin?: boolean | null
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          rating: number | null
+          role: string | null
+        }
+        Insert: {
+          author_name: string
+          content: string
+          created_at?: string
+          id?: string
+          rating?: number | null
+          role?: string | null
+        }
+        Update: {
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          rating?: number | null
+          role?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

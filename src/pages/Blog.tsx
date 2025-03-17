@@ -2,6 +2,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tables } from "@/types/supabase";
+
+type BlogPost = Tables["blog_posts"];
 
 const Blog = () => {
   const { data: posts, isLoading } = useQuery({
@@ -30,7 +33,7 @@ const Blog = () => {
           ...post,
           featured_image: imageUrl
         };
-      });
+      }) as BlogPost[];
     },
   });
 

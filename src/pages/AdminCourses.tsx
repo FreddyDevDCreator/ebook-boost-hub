@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -14,16 +13,9 @@ import {
 import { Pencil, Trash2, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Tables } from "@/types/supabase";
 
-type Course = {
-  id: string;
-  title: string;
-  description: string;
-  price: number;
-  instructor: string;
-  level: string;
-  slug: string;
-};
+type Course = Tables["courses"];
 
 const AdminCourses = () => {
   const navigate = useNavigate();
