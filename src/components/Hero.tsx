@@ -24,7 +24,7 @@ const Hero = () => {
                     to="/courses"
                     className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary hover:bg-primary-hover md:py-4 md:text-lg md:px-10"
                   >
-                    Buy Free Courses
+                    Get Free Courses
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </div>

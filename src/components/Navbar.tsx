@@ -24,7 +24,7 @@ const Navbar = () => {
             <Link to="/about" className="text-gray-700 hover:text-gray-900 hover:underline transition-colors">About</Link>
             <Link to="/contact" className="text-gray-700 hover:text-gray-900 hover:underline transition-colors">Contact</Link>
             <Link to="/courses" className="text-white bg-primary hover:bg-primary-hover px-4 py-2 rounded-lg font-medium transition-colors">
-              Buy Free Courses
+              Get Free Courses
             </Link>
             <Link to="/book" className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg font-medium transition-colors">
               Buy Ebook
@@ -79,7 +79,7 @@ const Navbar = () => {
             className="block px-3 py-2 text-base font-medium bg-primary text-white hover:bg-primary-hover rounded mt-2"
             onClick={() => setIsOpen(false)}
           >
-            Buy Free Courses
+            Get Free Courses
           </Link>
           <Link
             to="/book"
