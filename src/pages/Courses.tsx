@@ -6,12 +6,24 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
 import { Clock, BookOpen, ArrowRight, Mail } from "lucide-react";
-import { Tables } from "@/types/supabase";
 import { useToast } from "@/components/ui/use-toast";
+import axios from "axios";
 
-type Course = Tables["courses"];
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  currency: string;
+  instructor: string;
+  level: string;
+  slug: string;
+  duration: string;
+  preview_images: string[];
+}
+
+const API_BASE_URL = "https://ebookbackend-mgpp.onrender.com";
 
 const Courses = () => {
   const { toast } = useToast();
@@ -21,16 +33,12 @@ const Courses = () => {
   const { data: courses, isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('courses')
-        .select('*');
-      
-      if (error) throw error;
-      return data as Course[];
+      const response = await axios.get(`${API_BASE_URL}/api/courses`);
+      return response.data;
     },
   });
 
-  const handleGetFreeCourse = (courseId: string, courseTitle: string) => {
+  const handleGetFreeCourse = async (courseId: string, courseTitle: string) => {
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
       toast({
         title: "Invalid email",
@@ -42,15 +50,26 @@ const Courses = () => {
 
     setProcessingCourseId(courseId);
 
-    // Simulate processing
-    setTimeout(() => {
+    try {
+      await axios.post(`${API_BASE_URL}/api/courses/claim`, {
+        courseId,
+        email,
+      });
+      
       toast({
         title: "Success!",
         description: `${courseTitle} has been sent to your email.`,
       });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to claim the course. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setProcessingCourseId(null);
       setEmail("");
-    }, 1500);
+    }
   };
 
   if (isLoading) {
@@ -81,9 +100,9 @@ const Courses = () => {
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold text-center mb-12">Available Courses</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {courses?.map((course) => (
+          {courses?.map((course: Course) => (
             <Card key={course.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              {course.preview_images[0] && (
+              {course.preview_images && course.preview_images[0] && (
                 <img
                   src={course.preview_images[0]}
                   alt={course.title}

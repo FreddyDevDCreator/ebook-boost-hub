@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,43 +12,50 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pencil, Trash2, Plus } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Tables } from "@/types/supabase";
+import axios from "axios";
 
-type Course = Tables["courses"];
+const API_BASE_URL = "https://ebookbackend-mgpp.onrender.com";
+
+interface Course {
+  id: string;
+  title: string;
+  instructor: string;
+  level: string;
+  price: number;
+}
 
 const AdminCourses = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const { data: courses, refetch } = useQuery({
+  const { data: courses, isLoading: coursesLoading } = useQuery({
     queryKey: ['admin-courses'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('courses')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as Course[];
+      const response = await axios.get(`${API_BASE_URL}/api/courses`);
+      return response.data;
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return axios.delete(`${API_BASE_URL}/api/courses/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-courses'] });
+      toast.success('Course deleted successfully');
+    },
+    onError: () => {
+      toast.error('Failed to delete course');
     },
   });
 
   const handleDelete = async (id: string) => {
     try {
       setIsLoading(true);
-      const { error } = await supabase
-        .from('courses')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      
-      toast.success('Course deleted successfully');
-      refetch();
+      await deleteMutation.mutateAsync(id);
     } catch (error) {
-      toast.error('Failed to delete course');
       console.error('Error:', error);
     } finally {
       setIsLoading(false);
@@ -75,32 +83,42 @@ const AdminCourses = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {courses?.map((course) => (
-              <TableRow key={course.id}>
-                <TableCell>{course.title}</TableCell>
-                <TableCell>{course.instructor}</TableCell>
-                <TableCell>{course.level}</TableCell>
-                <TableCell>{course.price}</TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate(`/admin/courses/edit/${course.id}`)}
-                    className="mr-2"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(course.id)}
-                    disabled={isLoading}
-                  >
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  </Button>
-                </TableCell>
+            {coursesLoading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-4">Loading courses...</TableCell>
               </TableRow>
-            ))}
+            ) : courses?.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-4">No courses found</TableCell>
+              </TableRow>
+            ) : (
+              courses?.map((course: Course) => (
+                <TableRow key={course.id}>
+                  <TableCell>{course.title}</TableCell>
+                  <TableCell>{course.instructor}</TableCell>
+                  <TableCell>{course.level}</TableCell>
+                  <TableCell>{course.price}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate(`/admin/courses/edit/${course.id}`)}
+                      className="mr-2"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(course.id)}
+                      disabled={isLoading}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

@@ -2,14 +2,27 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { Clock, BookOpen, ArrowLeft, Mail } from "lucide-react";
-import { Tables } from "@/types/supabase";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import axios from "axios";
 
-type Course = Tables["courses"];
+const API_BASE_URL = "https://ebookbackend-mgpp.onrender.com";
+
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  currency: string;
+  instructor: string;
+  level: string;
+  slug: string;
+  duration: string;
+  preview_content: string;
+  preview_images: string[];
+}
 
 const CoursePreview = () => {
   const { slug } = useParams();
@@ -23,20 +36,14 @@ const CoursePreview = () => {
     queryFn: async () => {
       if (!slug) throw new Error('Course slug is required');
       
-      const { data, error } = await supabase
-        .from('courses')
-        .select()
-        .eq('slug', slug)
-        .maybeSingle();
-      
-      if (error) throw error;
-      if (!data) throw new Error('Course not found');
-      return data as Course;
+      const response = await axios.get(`${API_BASE_URL}/api/courses/slug/${slug}`);
+      if (!response.data) throw new Error('Course not found');
+      return response.data;
     },
     enabled: !!slug,
   });
 
-  const handleGetFreeCourse = () => {
+  const handleGetFreeCourse = async () => {
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
       toast({
         title: "Invalid email",
@@ -48,15 +55,26 @@ const CoursePreview = () => {
 
     setIsSubmitting(true);
 
-    // Simulate processing
-    setTimeout(() => {
+    try {
+      await axios.post(`${API_BASE_URL}/api/courses/claim`, {
+        courseId: course?.id,
+        email,
+      });
+      
       toast({
         title: "Success!",
         description: `${course?.title} has been sent to your email.`,
       });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to claim the course. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
       setEmail("");
-    }, 1500);
+    }
   };
 
   if (isLoading) {

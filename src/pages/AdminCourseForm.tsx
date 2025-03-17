@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -20,9 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Tables } from "@/types/supabase";
+import axios from "axios";
+
+const API_BASE_URL = "https://ebookbackend-mgpp.onrender.com";
 
 type CourseFormData = {
   title: string;
@@ -41,6 +43,7 @@ const AdminCourseForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const form = useForm<CourseFormData>({
     defaultValues: {
@@ -57,58 +60,51 @@ const AdminCourseForm = () => {
     },
   });
 
-  useEffect(() => {
-    const fetchCourse = async () => {
-      if (!id) return;
-
-      try {
-        const { data, error } = await supabase
-          .from('courses')
-          .select("*")
-          .eq("id", id)
-          .single();
-
-        if (error) throw error;
-        if (data) {
-          form.reset(data as CourseFormData);
-        }
-      } catch (error) {
-        console.error("Error fetching course:", error);
-        toast.error("Failed to fetch course details");
-        navigate("/admin/courses");
+  // Fetch course data if editing
+  const { isLoading: isFetchingCourse } = useQuery({
+    queryKey: ['course', id],
+    queryFn: async () => {
+      if (!id) return null;
+      const response = await axios.get(`${API_BASE_URL}/api/courses/${id}`);
+      return response.data;
+    },
+    enabled: !!id,
+    onSuccess: (data) => {
+      if (data) {
+        form.reset(data);
       }
-    };
+    },
+    onError: () => {
+      toast.error("Failed to fetch course details");
+      navigate("/admin/courses");
+    }
+  });
 
-    fetchCourse();
-  }, [id, form, navigate]);
+  // Create/Update mutation
+  const mutation = useMutation({
+    mutationFn: async (data: CourseFormData) => {
+      if (id) {
+        return axios.put(`${API_BASE_URL}/api/courses/${id}`, data);
+      } else {
+        return axios.post(`${API_BASE_URL}/api/courses`, data);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-courses'] });
+      toast.success(id ? "Course updated successfully" : "Course created successfully");
+      navigate("/admin/courses");
+    },
+    onError: () => {
+      toast.error(id ? "Failed to update course" : "Failed to create course");
+    }
+  });
 
   const onSubmit = async (data: CourseFormData) => {
     try {
       setIsLoading(true);
-
-      if (id) {
-        // Update existing course
-        const { error } = await supabase
-          .from('courses')
-          .update(data)
-          .eq("id", id);
-
-        if (error) throw error;
-        toast.success("Course updated successfully");
-      } else {
-        // Create new course
-        const { error } = await supabase
-          .from('courses')
-          .insert(data);
-
-        if (error) throw error;
-        toast.success("Course created successfully");
-      }
-
-      navigate("/admin/courses");
+      await mutation.mutateAsync(data);
     } catch (error) {
       console.error("Error saving course:", error);
-      toast.error(id ? "Failed to update course" : "Failed to create course");
     } finally {
       setIsLoading(false);
     }
@@ -119,6 +115,8 @@ const AdminCourseForm = () => {
       <h1 className="text-2xl font-bold mb-6">
         {id ? "Edit Course" : "Add New Course"}
       </h1>
+
+      {isFetchingCourse && <div className="text-center py-4">Loading course data...</div>}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
