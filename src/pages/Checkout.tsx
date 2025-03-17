@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -89,11 +90,21 @@ const Checkout = () => {
     console.log("Flutterwave response:", response);
 
     if (response.status === "completed" || response.status === "successful") {
-      // Save order to database
-      const orderData: Partial<Order> = {
+      // Make sure we have the course price value
+      if (!course || typeof course.price !== 'number') {
+        toast({
+          title: "Error",
+          description: "Could not process payment: course information missing",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Save order to database with required fields
+      const orderData = {
         customer_name: formData.customerName,
         customer_email: formData.customerEmail,
-        amount: course?.price,
+        amount: course.price,  // Ensure amount is always provided
         status: 'completed'
       };
 
