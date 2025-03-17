@@ -7,7 +7,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container-custom">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -19,14 +19,14 @@ const Navbar = () => {
 
           {/* Desktop menu */}
           <div className="hidden md:flex md:items-center md:space-x-8">
-            <Link to="/courses" className="text-gray-700 hover:text-gray-900 transition-colors">Courses</Link>
-            <Link to="/blog" className="text-gray-700 hover:text-gray-900 transition-colors">Blog</Link>
-            <Link to="/about" className="text-gray-700 hover:text-gray-900 transition-colors">About</Link>
-            <Link to="/contact" className="text-gray-700 hover:text-gray-900 transition-colors">Contact</Link>
-            <Link to="/courses" className="btn-primary">
+            <Link to="/courses" className="text-gray-700 hover:text-gray-900 hover:underline transition-colors">Courses</Link>
+            <Link to="/blog" className="text-gray-700 hover:text-gray-900 hover:underline transition-colors">Blog</Link>
+            <Link to="/about" className="text-gray-700 hover:text-gray-900 hover:underline transition-colors">About</Link>
+            <Link to="/contact" className="text-gray-700 hover:text-gray-900 hover:underline transition-colors">Contact</Link>
+            <Link to="/courses" className="text-white bg-primary hover:bg-primary-hover px-4 py-2 rounded-lg font-medium transition-colors">
               Buy Free Courses
             </Link>
-            <Link to="/book" className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg font-medium">
+            <Link to="/book" className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg font-medium transition-colors">
               Buy Ebook
             </Link>
           </div>
@@ -49,30 +49,42 @@ const Navbar = () => {
           <Link
             to="/courses"
             className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            onClick={() => setIsOpen(false)}
           >
             Courses
           </Link>
           <Link
             to="/blog"
             className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            onClick={() => setIsOpen(false)}
           >
             Blog
           </Link>
           <Link
             to="/about"
             className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            onClick={() => setIsOpen(false)}
           >
             About
           </Link>
           <Link
             to="/contact"
             className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            onClick={() => setIsOpen(false)}
           >
             Contact
           </Link>
           <Link
+            to="/courses"
+            className="block px-3 py-2 text-base font-medium bg-primary text-white hover:bg-primary-hover rounded mt-2"
+            onClick={() => setIsOpen(false)}
+          >
+            Buy Free Courses
+          </Link>
+          <Link
             to="/book"
             className="block px-3 py-2 text-base font-medium bg-yellow-500 text-black hover:bg-yellow-600 rounded mt-2"
+            onClick={() => setIsOpen(false)}
           >
             Buy Ebook
           </Link>

@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
-    <div className="relative overflow-hidden bg-white">
-      <div className="container-custom">
+    <div className="relative overflow-hidden bg-gradient-to-b from-white to-blue-50">
+      <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+      <div className="container-custom relative z-10">
         <div className="relative z-10 pt-14 lg:pt-20 pb-8 sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
           <main>
             <div className="text-center">
@@ -48,6 +49,11 @@ const Hero = () => {
           </main>
         </div>
       </div>
+      
+      {/* Decorative elements */}
+      <div className="absolute bottom-0 left-0 w-1/3 h-32 bg-primary opacity-10 rounded-tr-full"></div>
+      <div className="absolute top-20 right-10 w-24 h-24 bg-yellow-500 opacity-20 rounded-full"></div>
+      <div className="absolute bottom-20 right-1/4 w-16 h-16 bg-purple-500 opacity-20 rounded-full"></div>
     </div>
   );
 };

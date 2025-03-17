@@ -28,8 +28,8 @@ const Book = () => {
       return;
     }
     
-    // Navigate to checkout page with the selected tier
-    navigate(`/checkout?product=ebook&tier=${selectedTier}`);
+    // Navigate to checkout page with the selected tier and product type ebook
+    navigate(`/checkout/ebook-${selectedTier}`);
   };
 
   const handleLeadMagnetSubmit = (e: React.FormEvent) => {
@@ -290,7 +290,7 @@ const Book = () => {
           <h2 className="text-3xl font-bold mb-8 text-center">Choose Your Package</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {/* Basic Tier */}
-            <Card className={`border-2 ${selectedTier === 'basic' ? 'border-blue-500' : 'border-transparent'} hover:border-blue-500 transition-all`}>
+            <Card className={`border-2 ${selectedTier === 'basic' ? 'border-blue-500' : 'border-transparent'} hover:border-blue-500 transition-all shadow-lg hover:shadow-xl`}>
               <CardHeader>
                 <CardTitle className="text-center">Basic</CardTitle>
                 <div className="text-center">
@@ -316,10 +316,7 @@ const Book = () => {
               </CardContent>
               <CardFooter>
                 <Button
-                  onClick={() => {
-                    handleTierSelect('basic');
-                    navigate(`/checkout?product=ebook&tier=basic`);
-                  }}
+                  onClick={() => handleTierSelect('basic')}
                   className={`w-full ${selectedTier === 'basic' ? 'bg-blue-700' : ''}`}
                 >
                   Select Basic
@@ -328,7 +325,7 @@ const Book = () => {
             </Card>
 
             {/* Pro Tier */}
-            <Card className={`border-2 ${selectedTier === 'pro' ? 'border-blue-500' : 'border-transparent'} hover:border-blue-500 transition-all`}>
+            <Card className={`border-2 ${selectedTier === 'pro' ? 'border-blue-500' : 'border-transparent'} hover:border-blue-500 transition-all shadow-lg hover:shadow-xl`}>
               <CardHeader>
                 <div className="bg-blue-500 text-white text-xs font-bold uppercase px-3 py-1 rounded-full w-fit mx-auto mb-2">Most Popular</div>
                 <CardTitle className="text-center">Pro</CardTitle>
@@ -359,10 +356,7 @@ const Book = () => {
               </CardContent>
               <CardFooter>
                 <Button
-                  onClick={() => {
-                    handleTierSelect('pro');
-                    navigate(`/checkout?product=ebook&tier=pro`);
-                  }}
+                  onClick={() => handleTierSelect('pro')}
                   className={`w-full ${selectedTier === 'pro' ? 'bg-blue-700' : ''}`}
                 >
                   Select Pro
@@ -371,7 +365,7 @@ const Book = () => {
             </Card>
 
             {/* Premium Tier */}
-            <Card className={`border-2 ${selectedTier === 'premium' ? 'border-blue-500' : 'border-transparent'} hover:border-blue-500 transition-all`}>
+            <Card className={`border-2 ${selectedTier === 'premium' ? 'border-blue-500' : 'border-transparent'} hover:border-blue-500 transition-all shadow-lg hover:shadow-xl`}>
               <CardHeader>
                 <CardTitle className="text-center">Premium</CardTitle>
                 <div className="text-center">
@@ -405,10 +399,7 @@ const Book = () => {
               </CardContent>
               <CardFooter>
                 <Button
-                  onClick={() => {
-                    handleTierSelect('premium');
-                    navigate(`/checkout?product=ebook&tier=premium`);
-                  }}
+                  onClick={() => handleTierSelect('premium')}
                   className={`w-full ${selectedTier === 'premium' ? 'bg-blue-700' : ''}`}
                 >
                   Select Premium

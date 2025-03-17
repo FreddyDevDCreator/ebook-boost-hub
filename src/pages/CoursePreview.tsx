@@ -1,15 +1,22 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Clock, BookOpen, ArrowLeft } from "lucide-react";
+import { Clock, BookOpen, ArrowLeft, Mail } from "lucide-react";
 import { Tables } from "@/types/supabase";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 
 type Course = Tables["courses"];
 
 const CoursePreview = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: course, isLoading } = useQuery({
     queryKey: ['course', slug],
@@ -28,6 +35,29 @@ const CoursePreview = () => {
     },
     enabled: !!slug,
   });
+
+  const handleGetFreeCourse = () => {
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address to get this course for free.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // Simulate processing
+    setTimeout(() => {
+      toast({
+        title: "Success!",
+        description: `${course?.title} has been sent to your email.`,
+      });
+      setIsSubmitting(false);
+      setEmail("");
+    }, 1500);
+  };
 
   if (isLoading) {
     return (
@@ -106,16 +136,38 @@ const CoursePreview = () => {
 
           <div className="md:col-span-1">
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <div className="text-3xl font-bold mb-4">
-                {course.currency} {course.price.toLocaleString()}
+              <div className="text-3xl font-bold mb-4 flex items-center">
+                <span className="line-through text-gray-400">{course.currency} {course.price.toLocaleString()}</span>
+                <span className="ml-2 text-green-600">FREE</span>
               </div>
-              <Button
-                className="w-full mb-4"
-                onClick={() => navigate(`/checkout/${course.slug}`)}
-              >
-                Enroll Now
-              </Button>
-              <div className="text-sm text-gray-500">
+              
+              <div className="space-y-4">
+                <label htmlFor="email" className="block text-sm font-medium">
+                  Enter your email to get this course for free
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full"
+                />
+                <Button
+                  className="w-full"
+                  onClick={handleGetFreeCourse}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Processing..." : (
+                    <>
+                      Get Free Course
+                      <Mail className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+              
+              <div className="text-sm text-gray-500 mt-6">
                 <h4 className="font-semibold mb-2">This course includes:</h4>
                 <ul className="space-y-2">
                   <li>• Full lifetime access</li>
