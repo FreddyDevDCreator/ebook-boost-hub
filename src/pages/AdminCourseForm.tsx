@@ -69,9 +69,13 @@ const AdminCourseForm = () => {
       return response.data;
     },
     enabled: !!id,
-    onSuccess: (data) => {
-      if (data) {
-        form.reset(data);
+    // In Tanstack Query v5+, we need to use the onSuccess callback
+    // via the meta property
+    meta: {
+      onSuccess: (data: any) => {
+        if (data) {
+          form.reset(data);
+        }
       }
     },
     onError: () => {
@@ -98,6 +102,28 @@ const AdminCourseForm = () => {
       toast.error(id ? "Failed to update course" : "Failed to create course");
     }
   });
+
+  // Use an effect to handle setting form data when course data is fetched
+  useEffect(() => {
+    // This effect will run once the query has been executed
+    const fetchData = async () => {
+      if (!id) return;
+      
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/courses/${id}`);
+        if (response.data) {
+          form.reset(response.data);
+        }
+      } catch (error) {
+        toast.error("Failed to fetch course details");
+        navigate("/admin/courses");
+      }
+    };
+    
+    if (id) {
+      fetchData();
+    }
+  }, [id, form, navigate]);
 
   const onSubmit = async (data: CourseFormData) => {
     try {
