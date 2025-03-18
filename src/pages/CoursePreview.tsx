@@ -2,16 +2,18 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Clock, BookOpen, ArrowLeft, Mail } from "lucide-react";
+import { Clock, BookOpen, ArrowLeft, Mail, FileX } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 
 const API_BASE_URL = "https://ebookbackend-mgpp.onrender.com";
 
 interface Course {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   price: number;
@@ -31,14 +33,13 @@ const CoursePreview = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: course, isLoading } = useQuery({
+  const { data: course, isLoading, error } = useQuery({
     queryKey: ['course', slug],
     queryFn: async () => {
       if (!slug) throw new Error('Course slug is required');
       
       const response = await axios.get(`${API_BASE_URL}/api/courses/slug/${slug}`);
-      if (!response.data) throw new Error('Course not found');
-      return response.data;
+      return response.data; // API should return a single course
     },
     enabled: !!slug,
   });
@@ -57,7 +58,7 @@ const CoursePreview = () => {
 
     try {
       await axios.post(`${API_BASE_URL}/api/courses/claim`, {
-        courseId: course?.id,
+        courseId: course?._id,
         email,
       });
       
@@ -81,25 +82,76 @@ const CoursePreview = () => {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
         <div className="container mx-auto px-4">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
-            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8" />
-            <div className="h-96 bg-gray-200 rounded mb-8" />
+          <Skeleton className="h-10 w-32 mb-8" />
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="md:col-span-2">
+              <Skeleton className="h-10 w-3/4 mb-4" />
+              <Skeleton className="h-6 w-1/2 mb-6" />
+              <Skeleton className="h-64 w-full mb-8" />
+              <Skeleton className="h-8 w-1/3 mb-4" />
+              <Skeleton className="h-4 w-full mb-2" />
+              <Skeleton className="h-4 w-full mb-2" />
+              <Skeleton className="h-4 w-3/4 mb-6" />
+              <Skeleton className="h-8 w-1/4 mb-4" />
+              <Skeleton className="h-32 w-full rounded-lg" />
+            </div>
+            <div className="md:col-span-1">
+              <Skeleton className="h-64 w-full rounded-lg" />
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="container mx-auto px-4">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/courses')}
+            className="mb-8"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Courses
+          </Button>
+          
+          <Alert variant="destructive" className="mb-8">
+            <AlertTitle>Error Loading Course</AlertTitle>
+            <AlertDescription>
+              We encountered an error while loading this course. Please try again later.
+            </AlertDescription>
+          </Alert>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show "not found" state when course doesn't exist
   if (!course) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-2xl font-bold mb-4">Course not found</h1>
-          <Button onClick={() => navigate('/courses')}>
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/courses')}
+            className="mb-8 mx-auto"
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Courses
           </Button>
+          
+          <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+            <FileX className="h-16 w-16 text-gray-400 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Course Not Found</h2>
+            <p className="text-gray-500 mb-6">
+              The course you're looking for could not be found. It may have been removed or the URL might be incorrect.
+            </p>
+            <Button onClick={() => navigate('/courses')}>Browse All Courses</Button>
+          </div>
         </div>
       </div>
     );
@@ -134,7 +186,7 @@ const CoursePreview = () => {
             {course.preview_images?.length > 0 && (
               <div className="mb-8">
                 <img
-                  src={course.preview_images[0]}
+                  src={`${course.preview_images[0].startsWith('http') ? course.preview_images[0] : '/placeholder.svg'}`}
                   alt={course.title}
                   className="w-full rounded-lg shadow-md"
                 />
@@ -147,7 +199,7 @@ const CoursePreview = () => {
               
               <h3 className="text-xl font-semibold mb-4">Course Preview Content</h3>
               <div className="bg-white rounded-lg p-6 shadow-md">
-                {course.preview_content}
+                {course.preview_content || "No preview content available for this course."}
               </div>
             </div>
           </div>

@@ -6,12 +6,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Clock, BookOpen, ArrowRight, Mail } from "lucide-react";
+import { Clock, BookOpen, ArrowRight, Mail, FileX } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import axios from "axios";
 
 interface Course {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   price: number;
@@ -30,11 +32,12 @@ const Courses = () => {
   const [email, setEmail] = useState<string>("");
   const [processingCourseId, setProcessingCourseId] = useState<string | null>(null);
 
-  const { data: courses, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
       const response = await axios.get(`${API_BASE_URL}/api/courses`);
-      return response.data;
+      // Handle the API response structure correctly
+      return response.data.courses || [];
     },
   });
 
@@ -72,6 +75,7 @@ const Courses = () => {
     }
   };
 
+  // Show loading skeletons while data is being fetched
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
@@ -95,16 +99,51 @@ const Courses = () => {
     );
   }
 
+  // Show error state if API call fails
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="container mx-auto px-4">
+          <Alert variant="destructive" className="mb-8">
+            <AlertTitle>Error Loading Courses</AlertTitle>
+            <AlertDescription>
+              We encountered an error while loading courses. Please try again later.
+            </AlertDescription>
+          </Alert>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state if no courses are returned
+  if (!data || data.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="container mx-auto px-4 text-center">
+          <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+            <FileX className="h-16 w-16 text-gray-400 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">No Courses Available</h2>
+            <p className="text-gray-500 mb-6">
+              There are currently no courses available. Please check back later as we add new content regularly.
+            </p>
+            <Button onClick={() => window.location.reload()}>Refresh</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold text-center mb-12">Available Courses</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {courses?.map((course: Course) => (
-            <Card key={course.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+          {data.map((course: Course) => (
+            <Card key={course._id} className="overflow-hidden hover:shadow-lg transition-shadow">
               {course.preview_images && course.preview_images[0] && (
                 <img
-                  src={course.preview_images[0]}
+                  src={`${course.preview_images[0].startsWith('http') ? '' : '/placeholder.svg'}`}
                   alt={course.title}
                   className="w-full h-48 object-cover"
                 />
@@ -141,12 +180,12 @@ const Courses = () => {
                 </div>
                 
                 <div className="w-full pt-4 border-t border-gray-200">
-                  <Label htmlFor={`email-${course.id}`} className="mb-2 block text-sm font-medium">
+                  <Label htmlFor={`email-${course._id}`} className="mb-2 block text-sm font-medium">
                     Enter your email to get this course for free
                   </Label>
                   <div className="flex gap-2 mt-2">
                     <Input 
-                      id={`email-${course.id}`}
+                      id={`email-${course._id}`}
                       type="email" 
                       placeholder="your@email.com"
                       value={email}
@@ -154,10 +193,10 @@ const Courses = () => {
                       className="flex-grow"
                     />
                     <Button
-                      onClick={() => handleGetFreeCourse(course.id, course.title)}
-                      disabled={processingCourseId === course.id}
+                      onClick={() => handleGetFreeCourse(course._id, course.title)}
+                      disabled={processingCourseId === course._id}
                     >
-                      {processingCourseId === course.id ? (
+                      {processingCourseId === course._id ? (
                         "Processing..."
                       ) : (
                         <>
