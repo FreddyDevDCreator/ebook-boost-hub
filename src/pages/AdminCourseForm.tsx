@@ -61,7 +61,7 @@ const AdminCourseForm = () => {
   });
 
   // Fetch course data if editing
-  const { isLoading: isFetchingCourse } = useQuery({
+  const { isLoading: isFetchingCourse, error: fetchError } = useQuery({
     queryKey: ['course', id],
     queryFn: async () => {
       if (!id) return null;
@@ -69,20 +69,22 @@ const AdminCourseForm = () => {
       return response.data;
     },
     enabled: !!id,
-    // In Tanstack Query v5+, we need to use the onSuccess callback
-    // via the meta property
     meta: {
       onSuccess: (data: any) => {
         if (data) {
           form.reset(data);
         }
       }
-    },
-    onError: () => {
+    }
+  });
+
+  // Handle fetch error with useEffect
+  useEffect(() => {
+    if (fetchError) {
       toast.error("Failed to fetch course details");
       navigate("/admin/courses");
     }
-  });
+  }, [fetchError, navigate]);
 
   // Create/Update mutation
   const mutation = useMutation({
